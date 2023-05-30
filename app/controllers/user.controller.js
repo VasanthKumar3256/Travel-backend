@@ -1,11 +1,11 @@
-const db = require("../models");
+import db from "../models/index.js";
+import { encrypt, getSalt, hashPassword } from "../authentication/crypto.js";
 const User = db.user;
 const Session = db.session;
 const Op = db.Sequelize.Op;
-const { encrypt, getSalt, hashPassword } = require("../authentication/crypto");
 
 // Create and Save a new User
-exports.create = async (req, res) => {
+export const create = async (req, res) => {
   // Validate request
   if (req.body.firstName === undefined) {
     const error = new Error("First name cannot be empty for user!");
@@ -92,7 +92,7 @@ exports.create = async (req, res) => {
 };
 
 // Retrieve all Users from the database.
-exports.findAll = (req, res) => {
+export const findAll = (req, res) => {
   const id = req.query.id;
   var condition = id ? { id: { [Op.like]: `%${id}%` } } : null;
 
@@ -108,7 +108,7 @@ exports.findAll = (req, res) => {
 };
 
 // Find a single User with an id
-exports.findOne = (req, res) => {
+export const findOne = (req, res) => {
   const id = req.params.id;
 
   User.findByPk(id)
@@ -129,7 +129,7 @@ exports.findOne = (req, res) => {
 };
 
 // Find a single User with an email
-exports.findByEmail = (req, res) => {
+export const findByEmail = (req, res) => {
   const email = req.params.email;
 
   User.findOne({
@@ -155,7 +155,7 @@ exports.findByEmail = (req, res) => {
 };
 
 // Update a User by the id in the request
-exports.update = (req, res) => {
+export const update = (req, res) => {
   const id = req.params.id;
 
   User.update(req.body, {
@@ -180,7 +180,7 @@ exports.update = (req, res) => {
 };
 
 // Delete a User with the specified id in the request
-exports.delete = (req, res) => {
+export const deleteUser = (req, res) => {
   const id = req.params.id;
 
   User.destroy({
@@ -205,7 +205,7 @@ exports.delete = (req, res) => {
 };
 
 // Delete all People from the database.
-exports.deleteAll = (req, res) => {
+export const deleteAll = (req, res) => {
   User.destroy({
     where: {},
     truncate: false,
