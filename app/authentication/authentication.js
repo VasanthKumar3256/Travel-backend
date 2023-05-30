@@ -1,5 +1,6 @@
-const db = require("../models");
-const { hashPassword } = require("./crypto");
+import db from "../models/index.js";
+import { hashPassword } from "./crypto.js";
+
 const Session = db.session;
 const User = db.user;
 
@@ -9,7 +10,7 @@ const User = db.user;
  * If require is a string, enforces a specific type of authentication (credentials or token).
  * @return {{type: string, userId: string}}
  */
-authenticate = async (req, res, require = true) => {
+export const authenticate = async (req, res, require = true) => {
   let auth = req.get("authorization");
   console.log(auth);
   if (auth != null) {
@@ -88,7 +89,7 @@ authenticate = async (req, res, require = true) => {
   return { type: "none", userId: null };
 };
 
-authenticateRoute = async (req, res, next) => {
+export const authenticateRoute = async (req, res, next) => {
   let auth = req.get("authorization");
   console.log(auth);
   if (auth != null) {
@@ -129,10 +130,3 @@ authenticateRoute = async (req, res, next) => {
     });
   }
 };
-
-const auth = {
-  authenticate: authenticate,
-  authenticateRoute: authenticateRoute,
-};
-
-module.exports = auth;

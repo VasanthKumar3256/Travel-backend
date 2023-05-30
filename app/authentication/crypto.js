@@ -1,21 +1,22 @@
-const crypto = require("crypto");
+import crypto from "crypto"
 
 //encryption/hashing settings
-const saltSize = 16;
-const keySize = 64;
-const ivSize = 16;
-const tagSize = 16;
-const scryptOptions = {
+export const saltSize = 16;
+export const keySize = 64;
+export const ivSize = 16;
+export const tagSize = 16;
+export const scryptOptions = {
   N: 16384,
   r: 8,
   p: 1,
 };
-const secretKey = Buffer.from(process.env.SECRET_KEY, "base64");
+// export const secretKey = Buffer.from(process.env.SECRET_KEY || "new_secret", "base64");
+const secretKey = crypto.randomBytes(32);
 
 /**
  * Gets a randomized salt for a new password
  */
-getSalt = async () => {
+export const getSalt = async () => {
   return new Promise((fulfill, reject) => {
     crypto.randomBytes(saltSize, (err, salt) => {
       if (err) reject(err);
@@ -27,7 +28,7 @@ getSalt = async () => {
 /**
  * Hashes the given password with the given salt
  */
-hashPassword = async (password, salt) => {
+export const hashPassword = async (password, salt) => {
   return new Promise((fulfill, reject) => {
     crypto.scrypt(password, salt, keySize, scryptOptions, (err, key) => {
       if (err) reject(err);
@@ -39,7 +40,7 @@ hashPassword = async (password, salt) => {
 /**
  * Encryption the given JSON value
  */
-encrypt = async (content) => {
+export const encrypt = async (content) => {
   let str = JSON.stringify(content);
   let iv = crypto.randomBytes(ivSize);
   let cipher = crypto.createCipheriv("aes-256-gcm", secretKey, iv);
@@ -53,7 +54,7 @@ encrypt = async (content) => {
 /**
  * Decrypts the given token into a JSON value
  */
-decrypt = async (token) => {
+export const decrypt = async (token) => {
   try {
     let buffer = Buffer.from(token, "base64");
     let iv = buffer.slice(0, ivSize);
@@ -73,17 +74,3 @@ decrypt = async (token) => {
   }
 };
 
-const cryptoUtils = {
-  saltSize: saltSize,
-  keySize: keySize,
-  ivSize: ivSize,
-  tagSize: tagSize,
-  scryptOptions: scryptOptions,
-  secretKey: secretKey,
-  getSalt: getSalt,
-  hashPassword: hashPassword,
-  encrypt: encrypt,
-  decrypt: decrypt,
-};
-
-module.exports = cryptoUtils;

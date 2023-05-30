@@ -1,11 +1,12 @@
-const db = require("../models");
-const { authenticate } = require("../authentication/authentication");
+import db from "../models/index.js";
+import { authenticate } from "../authentication/authentication.js";
+import { encrypt } from "../authentication/crypto.js";
+
 const User = db.user;
 const Session = db.session;
 const Op = db.Sequelize.Op;
-const { encrypt } = require("../authentication/crypto");
 
-exports.login = async (req, res) => {
+export const login = async (req, res) => {
   let { userId } = await authenticate(req, res, "credentials");
 
   if (userId !== undefined) {
@@ -37,7 +38,7 @@ exports.login = async (req, res) => {
   }
 };
 
-exports.logout = async (req, res) => {
+export const logout = async (req, res) => {
   let auth = req.get("authorization");
   console.log(auth);
   if (
